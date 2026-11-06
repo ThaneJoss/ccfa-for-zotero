@@ -128,3 +128,62 @@ test('edited item metadata is reflected immediately, without stale result cachin
   fields.publicationTitle = 'ICLR';
   assert.equal(matcher.forItem(record), 'ICLR');
 });
+
+const pacmmodSeries = [
+  'Proceedings of the ACM on Management of Data',
+  'Proceedings of ACM on Management of Data',
+  '  PROCEEDINGS  OF THE ACM ON MANAGEMENT OF DATA  ',
+  '2025 Proceedings of the ACM on Management of Data',
+  'Ｐｒｏｃｅｅｄｉｎｇｓ ｏｆ ｔｈｅ ＡＣＭ ｏｎ Ｍａｎａｇｅｍｅｎｔ ｏｆ Ｄａｔａ ２０２５',
+  'Proceedings of the ACM on Management of Data (PACMMOD)',
+  'Proceedings of the ACM on Management of Data, Volume 3, Issue 2',
+  'Proc. ACM Manag. Data',
+  'PACMMOD',
+  'ＰＡＣＭＭＯＤ ２０２５'
+];
+
+test('PACMMOD series alone does not identify a conference track', () => {
+  for (const series of pacmmodSeries) {
+    assert.equal(matcher.match(series), '', series);
+    for (const field of ['publicationTitle', 'proceedingsTitle', 'bookTitle', 'conferenceName', 'journalAbbreviation']) {
+      assert.equal(matcher.forItem(item({ [field]: series })), '', field + ': ' + series);
+    }
+    assert.equal(matcher.forItem(item({
+      publicationTitle: series, journalAbbreviation: 'SIGMOD'
+    })), '', 'stale abbreviation: ' + series);
+  }
+});
+
+test('PACMMOD needs explicit conference metadata and never turns PODS into SIGMOD', () => {
+  for (const series of pacmmodSeries) {
+    for (const field of ['publicationTitle', 'proceedingsTitle', 'bookTitle']) {
+      for (const conference of ['PODS', '2025 ACM Symposium on Principles of Database Systems']) {
+        assert.equal(matcher.forItem(item({ [field]: series, conferenceName: conference })), '', series + ': ' + conference);
+      }
+      assert.equal(matcher.forItem(item({ [field]: series, conferenceName: 'SIGMOD' })), 'SIGMOD', series);
+      assert.equal(matcher.forItem(item({
+        [field]: series, conferenceName: 'ACM SIGMOD International Conference on Management of Data'
+      })), 'SIGMOD', series);
+      assert.equal(matcher.forItem(item({ [field]: series, conferenceName: 'SIGMOD Workshops' })), '', series);
+    }
+  }
+});
+
+test('SIGMOD conference titles retain their conference signature matches', () => {
+  for (const title of [
+    'SIGMOD',
+    '2025 ACM SIGMOD Conference',
+    'Proceedings of the 2025 International Conference on Management of Data',
+    'Proceedings of the ACM SIGMOD International Conference on Management of Data'
+  ]) assert.equal(matcher.match(title), 'SIGMOD', title);
+});
+
+test('editing the explicit PACMMOD track updates the displayed label', () => {
+  const fields = { publicationTitle: pacmmodSeries[0], conferenceName: 'SIGMOD' };
+  const record = item(fields);
+  assert.equal(matcher.forItem(record), 'SIGMOD');
+  fields.conferenceName = 'PODS';
+  assert.equal(matcher.forItem(record), '');
+  fields.conferenceName = '';
+  assert.equal(matcher.forItem(record), '');
+});

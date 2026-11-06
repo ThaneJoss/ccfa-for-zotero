@@ -1,15 +1,11 @@
-CCFA 1.0.1：修复 Zotero 9 / 10 安装时的版本不兼容提示。
+CCFA 1.0.2（准备发布）：修正 PACMMOD 会议轨道误标，并包含 Workshop 缩写修复。
 
-- 上一版安装包的最高支持版本设为 8.0.*；现依据 Zotero 9 / 10 官方开发文档与列接口实现，将兼容范围更新为 Zotero 7.0–10.0.*。
-- 发布前在独立的真实 Zotero 10.0.6 Linux 测试配置中检查：旧包被拒绝、新包可安装、CCFA 列注册和数据匹配、禁用/启用、重启恢复。
+- 修复 `Proceedings of the ACM on Management of Data`（PACMMOD）被自动归入 SIGMOD 的问题。该系列同时包含 SIGMOD 与 PODS；仅有系列名或另填 PODS 时留空，另一来源字段明确填写 SIGMOD 时才显示 SIGMOD。
+- 纳入此前已合并的 Workshop 缩写修复：`CVPRW`、`ICCVW` 及其年份、大小写、全角变体不再继承其他字段中的主会议标签。
+- 保持 CCF 2026 第七版目录（37 种期刊、58 个会议）、Zotero 7.0–10.0.* 兼容范围和本地只读计算方式。
 
-- 使用 CCF 2026 第七版正式目录：37 种期刊、58 个会议。
-- 支持常见出版物名称、年份、旧称、全角字符以及 NIPS 等旧简称。
-- Workshop、Findings、Companion 等明确标记不归入主会；非 A 类或未识别条目留空。
-- 本地只读计算，重启自动加载，可显示、隐藏及排序。
+安装：版本发布后，下载 `ccfa-1.0.2.xpi` → Zotero 工具 → 插件 → 齿轮 → 从文件安装插件 → 在列表表头右键勾选 CCFA。
 
-安装：下载 `ccfa-1.0.1.xpi` → Zotero 工具 → 插件 → 齿轮 → 从文件安装插件 → 在列表表头右键勾选 CCFA。
+口径：所有年份统一使用 2026 名单；名称匹配不验证论文类型。PACMMOD 系列信息不能代替论文所属会议轨道。
 
-口径：所有年份统一使用 2026 名单；ICLR 为 A 类，IJCAI 不在该版 A 类内。名称匹配不验证论文类型。
-
-验证结果随 Release 附件 `zotero-smoke.json` 发布。Windows/macOS 未实机验证。
+验证范围：新增回归用例覆盖 PACMMOD 全称、简称、年份与全角输入，PODS/SIGMOD 区分、既有 SIGMOD 标题及元数据修改。构建回归继续检查 XPI、更新清单、校验和与版本一致性。本版本尚未进行真实 Zotero 或 Windows/macOS 实机验证；自动 CI 不生成 `zotero-smoke.json`。
