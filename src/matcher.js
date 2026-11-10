@@ -3,6 +3,8 @@
 
 var CCFAMatcher = (() => {
   const NON_MAIN = /\b(?:workshops?|cvprw|iccvw|companion|adjunct|findings|demos?|demonstrations?|tutorials?|posters?|doctoral|short papers?|extended abstracts?|technical briefs?|student research)\b/i;
+  // PACMMOD spans multiple conference tracks, so its series name cannot identify SIGMOD.
+  const SHARED_SERIES = /\b(?:proceedings of (?:the )?acm on management of data|proc acm manag data|pacmmod)\b/;
   const WRAPPER = new Set([
     "proceedings", "proceeding", "of", "the", "on", "for", "and", "in",
     "acm", "ieee", "cvf", "ifip", "usenix", "sigplan", "sigact", "sigops", "siam",
@@ -55,11 +57,12 @@ var CCFAMatcher = (() => {
       if (!normalized || NON_MAIN.test(normalized)) return "";
       const withoutYear = normalized.split(" ")
         .filter(w => !/^(?:19|20)\d{2}$/.test(w) && !/^\d+(?:st|nd|rd|th)$/.test(w)).join(" ");
+      const isSharedSeries = SHARED_SERIES.test(withoutYear);
       // Do not turn the journal "Machine Learning" into the ICML conference,
       // or "Real-Time Systems" into RTSS by stripping all conference words.
       const hasConferenceContext = /\b(?:conference|symposium|meeting|proceedings)\b/.test(normalized);
       const venue = exact.get(normalized) || exact.get(withoutYear)
-        || (hasConferenceContext ? conferences.get(signature(value)) : null);
+        || (!isSharedSeries && hasConferenceContext ? conferences.get(signature(value)) : null);
       return venue ? venue.abbr : "";
     }
 

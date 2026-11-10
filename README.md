@@ -6,7 +6,7 @@
 
 ## 安装
 
-1. 从 [Releases](https://github.com/ThaneJoss/ccfa/releases/latest) 下载 `ccfa-1.0.1.xpi`。不要下载 GitHub 自动生成的 Source code ZIP。
+1. 从 [Releases](https://github.com/ThaneJoss/ccfa/releases/latest) 下载已发布版本的 `ccfa-<版本号>.xpi`。不要下载 GitHub 自动生成的 Source code ZIP。
 2. 在 Zotero 桌面版中打开 **工具 → 插件**（部分版本为“附加组件”）。
 3. 点击齿轮菜单 → **Install Add-on From File / 从文件安装插件**，选择 `.xpi`。
 4. 在文献列表表头右键，勾选 **CCFA**。可拖动列位置、调整宽度或点击表头排序。
@@ -19,6 +19,7 @@
 - 兼容大小写、空白、全角字符、年份、会议届次、常见出版社前缀、旧名称和 NIPS 等旧简称。
 - 字典采用确定性名称匹配；不在论文标题、摘要、标签里搜索缩写，不用模糊相似度猜测归属。
 - 出版物名称出现 Workshop、CVPRW、ICCVW、Findings、Companion、Short papers 等标记时留空，即使另一字段填写了主会议；不同字段指向不同会议时也留空。
+- `Proceedings of the ACM on Management of Data`（PACMMOD）是包含 SIGMOD 与 PODS 的出版系列，系列名本身不决定会议轨道。仅有系列名或另填 PODS 时留空；另一来源字段明确填写 SIGMOD 时才显示 SIGMOD。
 - 简称实时计算，不写入 Extra，不保存或修改任何条目。现有 Extra 内容保持原样，新导入或修改的条目使用同一规则。
 - 本地离线识别。插件本身不上传文献信息；Zotero 的标准插件更新机制会访问 GitHub 的更新清单。
 
